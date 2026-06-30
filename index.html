@@ -208,6 +208,100 @@
       margin-bottom: 4px;
     }
 
+    .hierarchy {
+      display: grid;
+      gap: 10px;
+      counter-reset: hierarchy;
+    }
+
+    .hierarchy-node {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfc;
+      padding: 11px;
+    }
+
+    .hierarchy-node::before {
+      counter-increment: hierarchy;
+      content: counter(hierarchy);
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .hierarchy-node strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .hierarchy-node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tier-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tier {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .tier-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .tier-head strong {
+      margin: 0;
+    }
+
+    .tier p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .decision-tree {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .decision-line {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 9px;
+    }
+
+    .decision-line span {
+      font-weight: 800;
+      color: var(--accent);
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -325,6 +419,32 @@
       display: grid;
       gap: 10px;
       padding: 16px;
+    }
+
+    .candidate-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .candidate-group + .candidate-group {
+      margin-top: 8px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .group-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .group-heading span {
+      color: var(--text);
     }
 
     .candidate {
@@ -498,7 +618,7 @@
       <div class="header-inner">
         <div>
           <h1>SNSいいね活動ボード</h1>
-          <p class="sub">子ども英語・親子英語アカウント用。抽出、判定、日次管理をこのページで行います。</p>
+          <p class="sub">子ども英語・親子英語アカウント用。探す、分ける、押す、共有する、の順番で進めます。</p>
         </div>
         <div class="daily-meter" aria-live="polite">
           <div class="meter-label">
@@ -515,38 +635,95 @@
       <aside class="stack">
         <section class="panel">
           <div class="panel-body stack">
-            <h2>固定ルール</h2>
-            <div class="rule-box">
-              <strong>狙う相手</strong>
-              <ol class="rule-list">
-                <li>こちらに反応してくれた保護者</li>
-                <li>子ども英語、親子英語、英語音読、英語日記に関心がある人</li>
-                <li>家庭学習、習い事、勉強習慣に関心がある人</li>
-              </ol>
+            <h2>運用階層</h2>
+            <div class="hierarchy">
+              <div class="hierarchy-node">
+                <div>
+                  <strong>探す</strong>
+                  <p>子ども英語、親子英語、家庭学習の検索から候補を集める。</p>
+                </div>
+              </div>
+              <div class="hierarchy-node">
+                <div>
+                  <strong>分ける</strong>
+                  <p>候補を「最優先」「通常」「要確認」「除外」に自動分類する。</p>
+                </div>
+              </div>
+              <div class="hierarchy-node">
+                <div>
+                  <strong>押す</strong>
+                  <p>最優先から順に、奥様が内容を見て手動でいいねする。</p>
+                </div>
+              </div>
+              <div class="hierarchy-node">
+                <div>
+                  <strong>共有する</strong>
+                  <p>料金、体験、競合、個人情報、迷うものは夫に送る。</p>
+                </div>
+              </div>
             </div>
-            <div class="rule-box">
-              <strong>見せたい印象</strong>
-              <ol class="rule-list">
-                <li>14日体験へ自然につながる</li>
-                <li>音声日記やアウトプット学習を大切にする</li>
-                <li>AIは裏方、先生の専門サポートを前面にする</li>
-              </ol>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>ターゲット階層</h2>
+            <div class="tier-list">
+              <div class="tier">
+                <div class="tier-head">
+                  <strong>第1階層</strong>
+                  <span class="badge ok">最優先</span>
+                </div>
+                <p>こちらに反応済み、子ども英語、英語音読、英語日記、発音、アウトプット。</p>
+              </div>
+              <div class="tier">
+                <div class="tier-head">
+                  <strong>第2階層</strong>
+                  <span class="badge mid">通常候補</span>
+                </div>
+                <p>家庭学習、習い事、勉強習慣、子育て、教育に関心がある保護者。</p>
+              </div>
+              <div class="tier">
+                <div class="tier-head">
+                  <strong>第3階層</strong>
+                  <span class="badge warn">要確認</span>
+                </div>
+                <p>14日体験、音声日記、料金、競合、先生サポート、個人情報が関係するもの。</p>
+              </div>
+              <div class="tier">
+                <div class="tier-head">
+                  <strong>対象外</strong>
+                  <span class="badge stop">除外</span>
+                </div>
+                <p>副業、投資、炎上、政治宗教、怪しいURL、DM誘導、フォロワー稼ぎ。</p>
+              </div>
             </div>
-            <div class="rule-box">
-              <strong>即スルー</strong>
-              <ol class="rule-list">
-                <li>副業、投資、稼げる系</li>
-                <li>政治、宗教、炎上、強い批判</li>
-                <li>アダルト、出会い、怪しいURL、DM誘導</li>
-              </ol>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>判定階層</h2>
+            <div class="decision-tree">
+              <div class="decision-line">
+                <span>1. 除外</span>
+                <div>副業、投資、炎上、怪しい誘導があれば即スルー。</div>
+              </div>
+              <div class="decision-line">
+                <span>2. 確認</span>
+                <div>料金、体験、競合、個人情報、DM相談は夫に確認。</div>
+              </div>
+              <div class="decision-line">
+                <span>3. 優先</span>
+                <div>子ども英語と保護者文脈が重なるものを最優先。</div>
+              </div>
+              <div class="decision-line">
+                <span>4. 通常</span>
+                <div>教育、家庭学習、習い事は通常候補として扱う。</div>
+              </div>
             </div>
-            <div class="rule-box">
-              <strong>夫に確認</strong>
-              <ol class="rule-list">
-                <li>料金、申し込み、14日体験、音声日記の質問</li>
-                <li>競合っぽい英語教室やスクール</li>
-                <li>クレーム、提携、取材、個人情報が強い投稿</li>
-              </ol>
+            <div class="notice">
+              見せたい印象は、14日体験へ自然につながり、音声日記や先生サポートを大切にするアカウントです。AIは前面に出しすぎません。
             </div>
           </div>
         </section>
@@ -573,7 +750,7 @@
       <section class="stack">
         <section class="panel">
           <div class="panel-body stack">
-            <h2>ターゲット抽出</h2>
+            <h2>1. 探す: ターゲット抽出</h2>
             <div class="form-grid">
               <label class="field">
                 地域
@@ -621,7 +798,7 @@
 
         <section class="panel">
           <div class="panel-body stack">
-            <h2>抽出ボタン</h2>
+            <h2>2. 取り込む: 抽出ボタン</h2>
             <div class="notice">
               このボタンをブックマークバーに登録します。検索結果やプロフィール一覧を開いた状態で押すと、見えている候補をこのページに取り込みます。
             </div>
@@ -638,13 +815,14 @@
         <section class="panel">
           <div class="tabs" id="tabs">
             <button type="button" class="tab active" data-filter="targets">いいね候補</button>
+            <button type="button" class="tab" data-filter="high">最優先</button>
             <button type="button" class="tab" data-filter="confirm">要確認</button>
             <button type="button" class="tab" data-filter="skip">スルー</button>
             <button type="button" class="tab" data-filter="all">全件</button>
           </div>
           <div class="candidate-toolbar">
             <div>
-              <h2>候補リスト</h2>
+              <h2>3. 分ける: 候補リスト</h2>
               <div class="counts" id="candidateCounts">候補はまだありません。</div>
             </div>
             <div class="actions">
@@ -1093,15 +1271,17 @@
       const filtered = candidates.filter((item) => {
         if (currentFilter === "all") return true;
         if (currentFilter === "targets") return item.decision.status === "ok";
+        if (currentFilter === "high") return item.decision.status === "ok" && item.decision.priority === "高";
         if (currentFilter === "confirm") return item.decision.status === "confirm";
         if (currentFilter === "skip") return item.decision.status === "skip";
         return true;
       });
 
       const ok = candidates.filter((item) => item.decision.status === "ok").length;
+      const high = candidates.filter((item) => item.decision.status === "ok" && item.decision.priority === "高").length;
       const confirm = candidates.filter((item) => item.decision.status === "confirm").length;
       const skip = candidates.filter((item) => item.decision.status === "skip").length;
-      els.candidateCounts.textContent = `全${candidates.length}件 / いいね候補${ok}件 / 要確認${confirm}件 / スルー${skip}件`;
+      els.candidateCounts.textContent = `全${candidates.length}件 / 最優先${high}件 / いいね候補${ok}件 / 要確認${confirm}件 / スルー${skip}件`;
       els.candidateList.innerHTML = "";
 
       if (!filtered.length) {
@@ -1109,13 +1289,45 @@
         return;
       }
 
-      filtered.forEach((item) => {
-        const card = document.createElement("article");
-        const done = Boolean(state.done[item.id]);
-        card.className = `candidate ${done ? "done" : ""}`;
-        card.innerHTML = candidateHtml(item, done);
-        els.candidateList.appendChild(card);
+      const groups = groupCandidates(filtered);
+      groups.forEach((group) => {
+        const section = document.createElement("section");
+        section.className = "candidate-group";
+        section.innerHTML = `<h3 class="group-heading"><span>${escapeHtml(group.title)}</span>${group.items.length}件</h3>`;
+        group.items.forEach((item) => {
+          const card = document.createElement("article");
+          const done = Boolean(state.done[item.id]);
+          card.className = `candidate ${done ? "done" : ""}`;
+          card.innerHTML = candidateHtml(item, done);
+          section.appendChild(card);
+        });
+        els.candidateList.appendChild(section);
       });
+    }
+
+    function groupCandidates(items) {
+      const order = [
+        { key: "ok-high", title: "第1階層: 最優先いいね候補" },
+        { key: "ok-mid", title: "第2階層: 通常いいね候補" },
+        { key: "ok-low", title: "第2.5階層: 時間が余った時だけ" },
+        { key: "confirm", title: "第3階層: 夫に確認" },
+        { key: "skip", title: "対象外: スルー" }
+      ];
+      const grouped = Object.fromEntries(order.map((group) => [group.key, []]));
+      items.forEach((item) => {
+        grouped[groupKey(item)].push(item);
+      });
+      return order
+        .map((group) => ({ title: group.title, items: grouped[group.key] }))
+        .filter((group) => group.items.length);
+    }
+
+    function groupKey(item) {
+      if (item.decision.status === "confirm") return "confirm";
+      if (item.decision.status === "skip") return "skip";
+      if (item.decision.priority === "高") return "ok-high";
+      if (item.decision.priority === "中") return "ok-mid";
+      return "ok-low";
     }
 
     function candidateHtml(item, done) {
