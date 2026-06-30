@@ -740,6 +740,7 @@
               <li>迷うものは夫に共有</li>
             </ol>
             <div class="actions">
+              <a class="link-button primary" href="outcomes.html">成果を見る</a>
               <button type="button" id="resetDayBtn">今日の記録をリセット</button>
               <button type="button" id="copyReportBtn">日次報告をコピー</button>
             </div>
@@ -841,6 +842,7 @@
   <script>
     const STORAGE_KEY = "sns-like-board-v1";
     const CANDIDATE_KEY = "sns-like-board-candidates-v1";
+    const HISTORY_KEY = "sns-like-board-history-v1";
 
     const topics = [
       { id: "childEnglish", label: "子ども英語", query: "子ども 英語", checked: true },
@@ -974,6 +976,32 @@
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateHistorySnapshot();
+    }
+
+    function loadHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveHistory(history) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function updateHistorySnapshot(snapshot = state) {
+      const history = loadHistory();
+      history[snapshot.date] = {
+        date: snapshot.date,
+        liked: Number(snapshot.liked || 0),
+        skipped: Number(snapshot.skipped || 0),
+        confirm: Number(snapshot.confirm || 0),
+        target: Number(snapshot.target || 20),
+        updatedAt: new Date().toISOString()
+      };
+      saveHistory(history);
     }
 
     function loadCandidates() {
@@ -991,6 +1019,7 @@
     function rolloverDayIfNeeded() {
       const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
       if (state.date !== today) {
+        updateHistorySnapshot({ ...state });
         state.date = today;
         state.liked = 0;
         state.skipped = 0;
@@ -998,6 +1027,7 @@
         state.done = {};
         saveState();
       }
+      updateHistorySnapshot();
       els.targetSelect.value = String(state.target);
     }
 
