@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SNSいいね活動 成果ダッシュボード</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #1f2528;
+      --muted: #667176;
+      --line: #dce3e4;
+      --teal: #0f766e;
+      --green: #15803d;
+      --blue: #2563eb;
+      --gold: #b7791f;
+      --red: #b91c1c;
+      --soft-teal: #e6f4f1;
+      --soft-blue: #eaf1ff;
+      --soft-gold: #fff7e6;
+      --soft-green: #eaf7ee;
+      --shadow: 0 16px 40px rgba(28, 44, 52, .08);
+      font-family: "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Meiryo", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    button,
+    a.button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      text-decoration: none;
+      cursor: pointer;
+      font: inherit;
+      white-space: nowrap;
+    }
+
+    .primary {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #fff;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .top {
+      padding: 22px 0 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    main {
+      padding: 18px 0 34px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .focus {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: #fbfcfc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .ring {
+      --ring-deg: 0deg;
+      width: 164px;
+      height: 164px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--teal) 0deg, var(--teal) var(--ring-deg), #e5ebec var(--ring-deg), #e5ebec 360deg);
+      margin-bottom: 12px;
+    }
+
+    .ring-inner {
+      width: 122px;
+      height: 122px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+    }
+
+    .ring-value {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .ring-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fff;
+      min-height: 118px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .metric.teal { background: var(--soft-teal); }
+    .metric.blue { background: var(--soft-blue); }
+    .metric.gold { background: var(--soft-gold); }
+    .metric.green { background: var(--soft-green); }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 9px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 70px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .bar-label {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .bar-track {
+      height: 18px;
+      background: #edf2f3;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+      border-radius: 999px;
+    }
+
+    .bar-value {
+      text-align: right;
+      font-weight: 800;
+    }
+
+    .levels {
+      display: grid;
+      gap: 10px;
+    }
+
+    .level {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .level.active {
+      border-color: rgba(15, 118, 110, .35);
+      box-shadow: inset 4px 0 0 var(--teal);
+    }
+
+    .level strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .level p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(14, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .day {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 7px 5px;
+      display: grid;
+      gap: 4px;
+      align-content: end;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .day.done {
+      border-color: rgba(21, 128, 61, .25);
+      background: #f0fbf3;
+    }
+
+    .day.goal {
+      border-color: rgba(15, 118, 110, .35);
+      background: #e6f4f1;
+    }
+
+    .day strong {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .day span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fbfcfc;
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer {
+      padding: 0 0 28px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 920px) {
+      .top,
+      .summary,
+      .two-col,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .bar-row {
+        grid-template-columns: 74px minmax(0, 1fr) 52px;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell top">
+      <div>
+        <h1>SNSいいね活動 成果ダッシュボード</h1>
+        <p class="lead">毎日の小さな活動を、見える数字に変えて続けやすくするページです。</p>
+      </div>
+      <div class="actions">
+        <a class="button" href="index.html">活動ボードへ戻る</a>
+        <button type="button" class="primary" id="copyReportBtn">成果をコピー</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="panel summary">
+      <div class="focus">
+        <div class="ring" id="todayRing">
+          <div class="ring-inner">
+            <div>
+              <div class="ring-value" id="todayRate">0%</div>
+              <div class="ring-label">今日の達成率</div>
+            </div>
+          </div>
+        </div>
+        <h2 id="todayMessage">今日の積み上げを開始</h2>
+        <p class="note" id="todayDetail">まずは10件で最低ライン達成です。</p>
+      </div>
+
+      <div class="cards">
+        <div class="metric teal">
+          <span>今日のいいね</span>
+          <strong id="todayLiked">0</strong>
+          <small id="todayTargetText">目標 20件</small>
+        </div>
+        <div class="metric blue">
+          <span>7日合計</span>
+          <strong id="weekTotal">0</strong>
+          <small>直近7日間の積み上げ</small>
+        </div>
+        <div class="metric green">
+          <span>連続実施</span>
+          <strong id="streakDays">0日</strong>
+          <small>1件以上で継続扱い</small>
+        </div>
+        <div class="metric gold">
+          <span>夫に共有</span>
+          <strong id="confirmTotal">0</strong>
+          <small>要確認を拾えた数</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>14日トレンド</h2>
+          <p class="note">日ごとのいいね数。目標達成日は濃く表示します。</p>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>モチベーション指標</h2>
+          <p class="note" id="levelNote">今日の動きで更新されます。</p>
+        </div>
+        <div class="levels" id="levels"></div>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>直近7日 成果バー</h2>
+          <p class="note">押した数が多い日ほどバーが伸びます。</p>
+        </div>
+        <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>成果の見方</h2>
+        </div>
+        <div class="levels">
+          <div class="level">
+            <strong>10件</strong>
+            <p>忙しい日の最低ライン。止めずに続けられた成果です。</p>
+          </div>
+          <div class="level">
+            <strong>20件</strong>
+            <p>通常日の基準。ターゲット探しが安定しています。</p>
+          </div>
+          <div class="level">
+            <strong>40件</strong>
+            <p>かなり良い日。候補抽出と判断が回っています。</p>
+          </div>
+          <div class="level">
+            <strong>50件</strong>
+            <p>上限。これ以上は押さず、翌日に回します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    このページは、同じブラウザ内の活動ボードに保存された記録だけを表示します。SNS側のデータを自動取得したり、外部へ送信したりしません。
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "sns-like-board-v1";
+    const HISTORY_KEY = "sns-like-board-history-v1";
+
+    const state = loadJson(STORAGE_KEY, {});
+    const history = mergeCurrent(loadJson(HISTORY_KEY, {}), state);
+    const days14 = buildDays(14);
+    const days7 = days14.slice(-7);
+
+    render();
+
+    function render() {
+      const today = jstDate();
+      const todayData = history[today] || emptyDay(today, Number(state.target || 20));
+      const todayTarget = Math.max(1, Number(todayData.target || 20));
+      const todayRate = Math.min(100, Math.round((todayData.liked / todayTarget) * 100));
+      const weekTotal = sum(days7, "liked");
+      const confirmTotal = sum(days14, "confirm");
+      const streak = countStreak();
+      const maxLiked = Math.max(20, ...days14.map((day) => Number(day.liked || 0)), ...days14.map((day) => Number(day.target || 20)));
+
+      document.getElementById("todayRing").style.setProperty("--ring-deg", `${Math.round(todayRate * 3.6)}deg`);
+      document.getElementById("todayRate").textContent = `${todayRate}%`;
+      document.getElementById("todayLiked").textContent = todayData.liked;
+      document.getElementById("todayTargetText").textContent = `目標 ${todayTarget}件`;
+      document.getElementById("weekTotal").textContent = weekTotal;
+      document.getElementById("streakDays").textContent = `${streak}日`;
+      document.getElementById("confirmTotal").textContent = confirmTotal;
+      document.getElementById("todayMessage").textContent = messageFor(todayData.liked, todayTarget);
+      document.getElementById("todayDetail").textContent = detailFor(todayData.liked, todayTarget, streak);
+
+      renderTimeline(days14);
+      renderBars(days7, maxLiked);
+      renderLevels(todayData.liked, weekTotal, streak, todayRate);
+      bindCopy(todayData, weekTotal, confirmTotal, streak, todayRate);
+    }
+
+    function renderTimeline(days) {
+      const el = document.getElementById("timeline");
+      el.innerHTML = "";
+      if (!days.some((day) => day.liked > 0 || day.confirm > 0 || day.skipped > 0)) {
+        el.innerHTML = '<div class="empty" style="grid-column:1/-1">活動ボードで「いいね済み」を押すと、ここに成果が表示されます。</div>';
+        return;
+      }
+      days.forEach((day) => {
+        const card = document.createElement("div");
+        const goal = Number(day.liked || 0) >= Number(day.target || 20);
+        card.className = `day ${day.liked > 0 ? "done" : ""} ${goal ? "goal" : ""}`;
+        card.innerHTML = `<span>${formatShortDate(day.date)}</span><strong>${day.liked}</strong><span>${goal ? "達成" : "件"}</span>`;
+        el.appendChild(card);
+      });
+    }
+
+    function renderBars(days, maxLiked) {
+      const el = document.getElementById("bars");
+      el.innerHTML = "";
+      days.forEach((day) => {
+        const width = Math.min(100, Math.round((Number(day.liked || 0) / maxLiked) * 100));
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div class="bar-label">${formatShortDate(day.date)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+          <div class="bar-value">${day.liked}件</div>
+        `;
+        el.appendChild(row);
+      });
+    }
+
+    function renderLevels(todayLiked, weekTotal, streak, todayRate) {
+      const score = todayRate + Math.min(40, streak * 8) + Math.min(40, weekTotal * 2);
+      const levels = [
+        {
+          title: "ウォームアップ",
+          active: todayLiked < 10,
+          text: "まずは10件。忙しい日でも続けた記録を残します。"
+        },
+        {
+          title: "通常運用",
+          active: todayLiked >= 10 && todayLiked < 20,
+          text: "最低ラインは達成。次は20件を目指すと安定します。"
+        },
+        {
+          title: "安定稼働",
+          active: todayLiked >= 20 && todayLiked < 40,
+          text: "通常日の基準を達成。いいね活動がきちんと回っています。"
+        },
+        {
+          title: "強い積み上げ",
+          active: todayLiked >= 40,
+          text: "かなり良い日です。50件を上限にして無理に増やしすぎないでください。"
+        }
+      ];
+      document.getElementById("levelNote").textContent = score >= 120 ? "勢いがあります。上限を守って継続重視。" : "今日の件数と連続日数で変わります。";
+      const el = document.getElementById("levels");
+      el.innerHTML = "";
+      levels.forEach((level) => {
+        const div = document.createElement("div");
+        div.className = `level ${level.active ? "active" : ""}`;
+        div.innerHTML = `<strong>${escapeHtml(level.title)}</strong><p>${escapeHtml(level.text)}</p>`;
+        el.appendChild(div);
+      });
+    }
+
+    function bindCopy(todayData, weekTotal, confirmTotal, streak, todayRate) {
+      document.getElementById("copyReportBtn").onclick = async () => {
+        const text = [
+          "【SNSいいね活動 成果】",
+          `日付: ${jstDate()}`,
+          `今日のいいね: ${todayData.liked}件`,
+          `今日の達成率: ${todayRate}%`,
+          `直近7日合計: ${weekTotal}件`,
+          `連続実施: ${streak}日`,
+          `要確認共有: ${confirmTotal}件`,
+          "",
+          "ひとこと:",
+          messageFor(todayData.liked, Number(todayData.target || 20))
+        ].join("\n");
+        await navigator.clipboard.writeText(text);
+        const button = document.getElementById("copyReportBtn");
+        const old = button.textContent;
+        button.textContent = "コピー済み";
+        setTimeout(() => { button.textContent = old; }, 1400);
+      };
+    }
+
+    function loadJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function mergeCurrent(storedHistory, currentState) {
+      const merged = { ...storedHistory };
+      if (currentState && currentState.date) {
+        merged[currentState.date] = {
+          date: currentState.date,
+          liked: Number(currentState.liked || 0),
+          skipped: Number(currentState.skipped || 0),
+          confirm: Number(currentState.confirm || 0),
+          target: Number(currentState.target || 20),
+          updatedAt: new Date().toISOString()
+        };
+      }
+      return merged;
+    }
+
+    function buildDays(count) {
+      const today = new Date(`${jstDate()}T00:00:00+09:00`);
+      const days = [];
+      for (let i = count - 1; i >= 0; i -= 1) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const key = date.toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+        days.push(history[key] || emptyDay(key, Number(state.target || 20)));
+      }
+      return days;
+    }
+
+    function emptyDay(date, target) {
+      return { date, liked: 0, skipped: 0, confirm: 0, target: target || 20 };
+    }
+
+    function sum(days, key) {
+      return days.reduce((total, day) => total + Number(day[key] || 0), 0);
+    }
+
+    function countStreak() {
+      let streak = 0;
+      for (let i = days14.length - 1; i >= 0; i -= 1) {
+        if (Number(days14[i].liked || 0) > 0) streak += 1;
+        else break;
+      }
+      return streak;
+    }
+
+    function messageFor(liked, target) {
+      if (liked >= 50) return "今日は上限まで完了";
+      if (liked >= 40) return "かなり良い積み上げ";
+      if (liked >= target) return "今日の目標達成";
+      if (liked >= 10) return "最低ライン達成";
+      if (liked > 0) return "活動スタート済み";
+      return "今日の積み上げを開始";
+    }
+
+    function detailFor(liked, target, streak) {
+      if (liked >= 50) return "これ以上は増やさず、明日に回してください。";
+      if (liked >= target) return `目標達成です。連続実施は${streak}日です。`;
+      if (liked >= 10) return "忙しい日の最低ラインは越えています。余裕があれば20件へ。";
+      if (liked > 0) return "あと少しで10件の最低ラインです。";
+      return "活動ボードで「いいね済み」を押すと反映されます。";
+    }
+
+    function formatShortDate(dateText) {
+      const parts = String(dateText).split("-");
+      return `${Number(parts[1])}/${Number(parts[2])}`;
+    }
+
+    function jstDate() {
+      return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+  </script>
+</body>
+</html>
