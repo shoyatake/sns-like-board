@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SNSいいね活動ボード</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-2: #f0f5f4;
+      --text: #1e2528;
+      --muted: #667176;
+      --line: #dce3e4;
+      --accent: #0f766e;
+      --accent-2: #2563eb;
+      --warn: #b45309;
+      --danger: #b91c1c;
+      --ok: #15803d;
+      --shadow: 0 16px 40px rgba(28, 44, 52, .08);
+      font-family: "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Meiryo", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    .link-button,
+    .bookmarklet {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button.primary,
+    .link-button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    button.blue,
+    .link-button.blue {
+      border-color: var(--accent-2);
+      background: var(--accent-2);
+      color: #fff;
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+
+    .sub {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .daily-meter {
+      display: grid;
+      gap: 7px;
+      min-width: 280px;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .meter-track {
+      height: 10px;
+      background: #e6ecec;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #22c55e);
+      transition: width .2s ease;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2,
+    .panel h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .panel h2 {
+      font-size: 18px;
+    }
+
+    .panel h3 {
+      font-size: 15px;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tight {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rule-list,
+    .steps {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .rule-list li,
+    .steps li {
+      margin: 4px 0;
+    }
+
+    .rule-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfc;
+    }
+
+    .rule-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label.field {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 9px 10px;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .chip input {
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .notice {
+      border-left: 4px solid var(--accent);
+      background: var(--panel-2);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #264142;
+    }
+
+    .warning {
+      border-left-color: var(--warn);
+      background: #fff7ed;
+      color: #5f3b10;
+    }
+
+    .danger {
+      border-left-color: var(--danger);
+      background: #fef2f2;
+      color: #6f1d1d;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 12px 12px 0;
+    }
+
+    .tab {
+      border-radius: 999px;
+      min-height: 34px;
+      font-size: 13px;
+    }
+
+    .tab.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .candidate-toolbar {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .counts {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .candidate-list {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .candidate {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .candidate.done {
+      opacity: .62;
+    }
+
+    .candidate-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .candidate-title {
+      margin: 0;
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .candidate-url {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .badge.ok {
+      color: #14532d;
+      background: #dcfce7;
+      border-color: #bbf7d0;
+    }
+
+    .badge.mid {
+      color: #1e3a8a;
+      background: #dbeafe;
+      border-color: #bfdbfe;
+    }
+
+    .badge.low {
+      color: #4b5563;
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+
+    .badge.warn {
+      color: #7c2d12;
+      background: #ffedd5;
+      border-color: #fed7aa;
+    }
+
+    .badge.stop {
+      color: #7f1d1d;
+      background: #fee2e2;
+      border-color: #fecaca;
+    }
+
+    .candidate-text {
+      margin: 0;
+      color: #344147;
+      font-size: 13px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-height: 96px;
+      overflow: hidden;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .decision div {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px;
+      background: #fbfcfc;
+    }
+
+    .decision strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fbfcfc;
+    }
+
+    .search-results {
+      display: grid;
+      gap: 8px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .search-row code {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      font-size: 12px;
+    }
+
+    .footer-space {
+      height: 30px;
+    }
+
+    @media (max-width: 920px) {
+      .header-inner,
+      main,
+      .candidate-toolbar,
+      .candidate-head,
+      .decision,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .daily-meter {
+        min-width: 0;
+      }
+
+      .badges {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="header-inner">
+        <div>
+          <h1>SNSいいね活動ボード</h1>
+          <p class="sub">子ども英語・親子英語アカウント用。抽出、判定、日次管理をこのページで行います。</p>
+        </div>
+        <div class="daily-meter" aria-live="polite">
+          <div class="meter-label">
+            <span id="todayLabel">今日のいいね</span>
+            <strong><span id="likedCount">0</span> / <span id="dailyTarget">20</span></strong>
+          </div>
+          <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+          <div class="counts" id="dailyNote">通常日は20件から40件。上限は50件。</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <aside class="stack">
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>固定ルール</h2>
+            <div class="rule-box">
+              <strong>狙う相手</strong>
+              <ol class="rule-list">
+                <li>こちらに反応してくれた保護者</li>
+                <li>子ども英語、親子英語、英語音読、英語日記に関心がある人</li>
+                <li>家庭学習、習い事、勉強習慣に関心がある人</li>
+              </ol>
+            </div>
+            <div class="rule-box">
+              <strong>見せたい印象</strong>
+              <ol class="rule-list">
+                <li>14日体験へ自然につながる</li>
+                <li>音声日記やアウトプット学習を大切にする</li>
+                <li>AIは裏方、先生の専門サポートを前面にする</li>
+              </ol>
+            </div>
+            <div class="rule-box">
+              <strong>即スルー</strong>
+              <ol class="rule-list">
+                <li>副業、投資、稼げる系</li>
+                <li>政治、宗教、炎上、強い批判</li>
+                <li>アダルト、出会い、怪しいURL、DM誘導</li>
+              </ol>
+            </div>
+            <div class="rule-box">
+              <strong>夫に確認</strong>
+              <ol class="rule-list">
+                <li>料金、申し込み、14日体験、音声日記の質問</li>
+                <li>競合っぽい英語教室やスクール</li>
+                <li>クレーム、提携、取材、個人情報が強い投稿</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>今日の手順</h2>
+            <ol class="steps">
+              <li>DMとコメントを確認</li>
+              <li>こちらに反応した人を優先</li>
+              <li>検索リンクで候補を開く</li>
+              <li>抽出ボタンで候補を取り込む</li>
+              <li>「いいねOK 高」から順に手動でいいね</li>
+              <li>迷うものは夫に共有</li>
+            </ol>
+            <div class="actions">
+              <button type="button" id="resetDayBtn">今日の記録をリセット</button>
+              <button type="button" id="copyReportBtn">日次報告をコピー</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="stack">
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>ターゲット抽出</h2>
+            <div class="form-grid">
+              <label class="field">
+                地域
+                <input type="text" id="regionInput" value="" placeholder="例: 名古屋、横浜、オンライン">
+              </label>
+              <label class="field">
+                SNS
+                <select id="platformSelect">
+                  <option value="x">X</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="threads">Threads</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="google">Google</option>
+                </select>
+              </label>
+              <label class="field">
+                今日の目標
+                <select id="targetSelect">
+                  <option value="10">10件 忙しい日</option>
+                  <option value="20" selected>20件 通常</option>
+                  <option value="40">40件 多め</option>
+                  <option value="50">50件 上限</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="tight">
+              <h3>抽出テーマ</h3>
+              <div class="chips" id="topicChips"></div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="primary" id="buildSearchBtn">検索リンクを作成</button>
+              <button type="button" class="blue" id="openSearchPackBtn">優先検索をまとめて開く</button>
+              <button type="button" id="loadSampleBtn">判定テストを読み込む</button>
+            </div>
+
+            <div class="search-results" id="searchResults"></div>
+
+            <div class="notice">
+              SNS側の自動いいねはしません。候補抽出と判定だけ自動化し、実際のいいねは奥様が確認して手動で押します。
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body stack">
+            <h2>抽出ボタン</h2>
+            <div class="notice">
+              このボタンをブックマークバーに登録します。検索結果やプロフィール一覧を開いた状態で押すと、見えている候補をこのページに取り込みます。
+            </div>
+            <div class="actions">
+              <a href="#" class="bookmarklet primary" id="bookmarkletLink">候補を抽出</a>
+              <button type="button" id="copyBookmarkletBtn">抽出ボタンの中身をコピー</button>
+            </div>
+            <div class="notice warning">
+              GitHub PagesのURLで開いた状態で登録してください。ローカルファイルのままだと、SNSページから戻れない場合があります。
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="tabs" id="tabs">
+            <button type="button" class="tab active" data-filter="targets">いいね候補</button>
+            <button type="button" class="tab" data-filter="confirm">要確認</button>
+            <button type="button" class="tab" data-filter="skip">スルー</button>
+            <button type="button" class="tab" data-filter="all">全件</button>
+          </div>
+          <div class="candidate-toolbar">
+            <div>
+              <h2>候補リスト</h2>
+              <div class="counts" id="candidateCounts">候補はまだありません。</div>
+            </div>
+            <div class="actions">
+              <button type="button" id="clearCandidatesBtn">候補をクリア</button>
+            </div>
+          </div>
+          <div class="candidate-list" id="candidateList">
+            <div class="empty">検索リンクを開き、抽出ボタンで候補を取り込んでください。</div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <div class="footer-space"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "sns-like-board-v1";
+    const CANDIDATE_KEY = "sns-like-board-candidates-v1";
+
+    const topics = [
+      { id: "childEnglish", label: "子ども英語", query: "子ども 英語", checked: true },
+      { id: "parentEnglish", label: "親子英語", query: "親子英語", checked: true },
+      { id: "reading", label: "英語音読", query: "英語 音読", checked: true },
+      { id: "diary", label: "英語日記", query: "英語 日記", checked: true },
+      { id: "speaking", label: "発音・英会話", query: "子ども 英会話 発音", checked: true },
+      { id: "homeStudy", label: "家庭学習", query: "家庭学習 英語", checked: true },
+      { id: "habits", label: "勉強習慣", query: "勉強習慣 習い事", checked: false },
+      { id: "eiken", label: "英検 子ども", query: "英検 子ども", checked: false },
+      { id: "area", label: "地域 習い事", query: "習い事 英語", checked: false }
+    ];
+
+    const ruleWords = {
+      high: [
+        "子ども英語", "こども英語", "親子英語", "小学生 英語", "幼児 英語",
+        "英語音読", "英語 日記", "英語日記", "音声日記", "英会話", "発音",
+        "スピーキング", "アウトプット", "英検", "家庭学習", "習い事"
+      ],
+      parent: [
+        "ママ", "母", "お母さん", "パパ", "父", "保護者", "子育て",
+        "小学生", "幼児", "年長", "年中", "中学生", "娘", "息子", "子供", "子ども"
+      ],
+      intent: [
+        "続かない", "苦手", "話せない", "聞き取れない", "悩み", "どうしたら",
+        "家で", "練習", "習慣", "毎日", "頑張って", "始めた", "体験"
+      ],
+      medium: [
+        "教育", "学習", "読書", "学校", "勉強", "塾", "知育", "朝学習",
+        "ワーク", "宿題", "習慣化", "習いごと"
+      ],
+      low: [
+        "大人英語", "ビジネス英語", "TOEIC", "留学", "海外旅行", "名言", "自己啓発"
+      ],
+      confirm: [
+        "料金", "費用", "申し込み", "申込み", "申込", "無料体験", "体験レッスン",
+        "14日体験", "音声日記", "先生サポート", "問い合わせ", "クレーム",
+        "提携", "取材", "PR依頼", "案件", "英語教室", "英会話スクール",
+        "オンライン英会話", "競合", "スクール", "塾"
+      ],
+      ai: [
+        "AI", "ChatGPT", "生成AI", "AI英語", "AI先生", "AIで英語", "AIで解決",
+        "AIで稼ぐ"
+      ],
+      privacy: [
+        "学校名", "住所", "本名", "病気", "障害", "診断", "家庭事情", "顔出し"
+      ],
+      severeSkip: [
+        "副業", "投資", "FX", "仮想通貨", "暗号資産", "稼げる", "情報商材",
+        "ネットワークビジネス", "アダルト", "出会い", "エロ", "政治", "宗教",
+        "炎上", "誹謗中傷", "怪しいURL", "LINE登録", "DMください", "権利収入"
+      ],
+      skip: [
+        "フォロバ", "相互フォロー", "プレゼント企画", "懸賞", "バズらせ",
+        "誰でも稼げる", "自動収益", "完全自動", "高単価案件"
+      ]
+    };
+
+    const state = loadState();
+    let candidates = loadCandidates();
+    let currentFilter = "targets";
+
+    const els = {
+      todayLabel: document.getElementById("todayLabel"),
+      likedCount: document.getElementById("likedCount"),
+      dailyTarget: document.getElementById("dailyTarget"),
+      meterFill: document.getElementById("meterFill"),
+      dailyNote: document.getElementById("dailyNote"),
+      targetSelect: document.getElementById("targetSelect"),
+      regionInput: document.getElementById("regionInput"),
+      platformSelect: document.getElementById("platformSelect"),
+      topicChips: document.getElementById("topicChips"),
+      searchResults: document.getElementById("searchResults"),
+      candidateList: document.getElementById("candidateList"),
+      candidateCounts: document.getElementById("candidateCounts"),
+      tabs: document.getElementById("tabs"),
+      bookmarkletLink: document.getElementById("bookmarkletLink")
+    };
+
+    init();
+
+    function init() {
+      rolloverDayIfNeeded();
+      renderTopics();
+      renderDaily();
+      renderBookmarklet();
+      bindEvents();
+      importFromHash();
+      if (candidates.length) renderCandidates();
+    }
+
+    function bindEvents() {
+      document.getElementById("buildSearchBtn").addEventListener("click", renderSearchLinks);
+      document.getElementById("openSearchPackBtn").addEventListener("click", openSearchPack);
+      document.getElementById("loadSampleBtn").addEventListener("click", loadSampleCandidates);
+      document.getElementById("resetDayBtn").addEventListener("click", resetDay);
+      document.getElementById("copyReportBtn").addEventListener("click", copyDailyReport);
+      document.getElementById("copyBookmarkletBtn").addEventListener("click", copyBookmarklet);
+      document.getElementById("clearCandidatesBtn").addEventListener("click", clearCandidates);
+      els.targetSelect.addEventListener("change", () => {
+        state.target = Number(els.targetSelect.value);
+        saveState();
+        renderDaily();
+      });
+      els.tabs.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-filter]");
+        if (!button) return;
+        currentFilter = button.dataset.filter;
+        document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab === button));
+        renderCandidates();
+      });
+      window.addEventListener("hashchange", importFromHash);
+    }
+
+    function loadState() {
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return {
+          date: stored.date || today,
+          liked: Number(stored.liked || 0),
+          skipped: Number(stored.skipped || 0),
+          confirm: Number(stored.confirm || 0),
+          target: Number(stored.target || 20),
+          done: stored.done || {}
+        };
+      } catch {
+        return { date: today, liked: 0, skipped: 0, confirm: 0, target: 20, done: {} };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadCandidates() {
+      try {
+        return JSON.parse(localStorage.getItem(CANDIDATE_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCandidates() {
+      localStorage.setItem(CANDIDATE_KEY, JSON.stringify(candidates));
+    }
+
+    function rolloverDayIfNeeded() {
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+      if (state.date !== today) {
+        state.date = today;
+        state.liked = 0;
+        state.skipped = 0;
+        state.confirm = 0;
+        state.done = {};
+        saveState();
+      }
+      els.targetSelect.value = String(state.target);
+    }
+
+    function renderDaily() {
+      els.todayLabel.textContent = `${state.date} のいいね`;
+      els.likedCount.textContent = state.liked;
+      els.dailyTarget.textContent = state.target;
+      const percent = Math.min(100, Math.round((state.liked / state.target) * 100));
+      els.meterFill.style.width = `${percent}%`;
+      let note = "通常日は20件から40件。上限は50件。";
+      if (state.liked >= 50) note = "上限の50件に到達。今日はここで終了。";
+      else if (state.liked >= state.target) note = "今日の目標達成。追加する場合も50件まで。";
+      else if (state.liked >= 10 && state.target === 10) note = "忙しい日の最低ライン達成。";
+      els.dailyNote.textContent = note;
+    }
+
+    function renderTopics() {
+      els.topicChips.innerHTML = "";
+      topics.forEach((topic) => {
+        const label = document.createElement("label");
+        label.className = "chip";
+        label.innerHTML = `<input type="checkbox" value="${topic.id}" ${topic.checked ? "checked" : ""}> ${escapeHtml(topic.label)}`;
+        els.topicChips.appendChild(label);
+      });
+    }
+
+    function selectedTopics() {
+      const selected = Array.from(els.topicChips.querySelectorAll("input:checked")).map((input) => input.value);
+      return topics.filter((topic) => selected.includes(topic.id));
+    }
+
+    function buildQueries() {
+      const region = els.regionInput.value.trim();
+      const selected = selectedTopics();
+      const base = selected.length ? selected : topics.slice(0, 5);
+      return base.map((topic) => {
+        const terms = [topic.query, "保護者"].concat(region ? [region] : []);
+        return {
+          label: topic.label,
+          query: terms.join(" ")
+        };
+      });
+    }
+
+    function renderSearchLinks() {
+      const queries = buildQueries();
+      const platform = els.platformSelect.value;
+      els.searchResults.innerHTML = "";
+      queries.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "search-row";
+        const url = searchUrl(platform, item.query);
+        row.innerHTML = `
+          <div>
+            <strong>${escapeHtml(item.label)}</strong><br>
+            <code>${escapeHtml(item.query)}</code>
+          </div>
+          <a class="link-button" href="${escapeAttr(url)}" target="_blank" rel="noreferrer">開く</a>
+        `;
+        els.searchResults.appendChild(row);
+      });
+    }
+
+    function openSearchPack() {
+      const queries = buildQueries().slice(0, 4);
+      const platform = els.platformSelect.value;
+      queries.forEach((item, index) => {
+        setTimeout(() => window.open(searchUrl(platform, item.query), "_blank", "noopener,noreferrer"), index * 250);
+      });
+      if (!queries.length) renderSearchLinks();
+    }
+
+    function searchUrl(platform, query) {
+      const q = encodeURIComponent(query);
+      if (platform === "x") return `https://x.com/search?q=${q}&src=typed_query&f=live`;
+      if (platform === "instagram") return `https://www.google.com/search?q=${encodeURIComponent(`site:instagram.com ${query}`)}`;
+      if (platform === "threads") return `https://www.threads.com/search?q=${q}`;
+      if (platform === "tiktok") return `https://www.tiktok.com/search?q=${q}`;
+      return `https://www.google.com/search?q=${q}`;
+    }
+
+    function renderBookmarklet() {
+      const target = window.location.href.split("#")[0];
+      const code = bookmarkletSource(target);
+      els.bookmarkletLink.href = code;
+      els.bookmarkletLink.setAttribute("title", "ブックマークバーに登録");
+    }
+
+    function bookmarkletSource(targetUrl) {
+      const source = `(function(){` +
+        `var target=${JSON.stringify(targetUrl)};` +
+        `function clean(s){return (s||'').replace(/\\s+/g,' ').trim();}` +
+        `function near(a){var e=a.closest('article,[role=article],li,section,div');return clean(e&&e.innerText||a.innerText||a.textContent).slice(0,700);}` +
+        `var links=[].slice.call(document.querySelectorAll('a[href]'));` +
+        `var bad=/\\/login|\\/signup|\\/privacy|\\/terms|\\/settings|\\/notifications|\\/messages|\\/explore|\\/search|\\/hashtag|javascript:/i;` +
+        `var items=[];var seen={};` +
+        `links.forEach(function(a){var href=a.href;if(!href||bad.test(href))return;var text=near(a);if(text.length<18)return;var key=href.split('?')[0];if(seen[key])return;seen[key]=1;items.push({url:href,title:clean(a.innerText||a.textContent||document.title).slice(0,120),text:text});});` +
+        `if(!items.length){items=[{url:location.href,title:document.title,text:clean(document.body.innerText).slice(0,1200)}];}` +
+        `items=items.slice(0,60);` +
+        `var json=JSON.stringify({source:location.href,title:document.title,capturedAt:new Date().toISOString(),items:items});` +
+        `var payload=btoa(unescape(encodeURIComponent(json)));` +
+        `window.open(target+'#import='+payload,'_blank');` +
+      `})();`;
+      return `javascript:${encodeURIComponent(source)}`;
+    }
+
+    async function copyBookmarklet() {
+      const code = els.bookmarkletLink.href;
+      await navigator.clipboard.writeText(code);
+      flashButton("copyBookmarkletBtn", "コピー済み");
+    }
+
+    function importFromHash() {
+      const hash = window.location.hash || "";
+      if (!hash.startsWith("#import=")) return;
+      try {
+        const payload = hash.replace("#import=", "");
+        const json = decodeURIComponent(escape(atob(payload)));
+        const data = JSON.parse(json);
+        const imported = (data.items || []).map((item) => makeCandidate(item, data.source)).filter(Boolean);
+        mergeCandidates(imported);
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      } catch (error) {
+        showInlineError("候補の取り込みに失敗しました。検索ページで抽出ボタンを押し直してください。");
+      }
+    }
+
+    function mergeCandidates(newItems) {
+      const byId = new Map(candidates.map((item) => [item.id, item]));
+      newItems.forEach((item) => {
+        if (!byId.has(item.id)) byId.set(item.id, item);
+      });
+      candidates = Array.from(byId.values()).sort(sortCandidate);
+      saveCandidates();
+      renderCandidates();
+    }
+
+    function makeCandidate(raw, source) {
+      const url = raw.url || source || "";
+      const text = [raw.title, raw.text, url].filter(Boolean).join(" ");
+      if (!text.trim()) return null;
+      const decision = classify(text);
+      return {
+        id: hashString((url || "") + text.slice(0, 240)),
+        url,
+        title: raw.title || guessTitle(url) || "候補",
+        text: (raw.text || "").trim().slice(0, 900),
+        source: source || "",
+        decision,
+        addedAt: new Date().toISOString()
+      };
+    }
+
+    function classify(text) {
+      const normalized = normalize(text);
+      const hits = {
+        severeSkip: matchWords(normalized, ruleWords.severeSkip),
+        skip: matchWords(normalized, ruleWords.skip),
+        confirm: matchWords(normalized, ruleWords.confirm),
+        ai: matchWords(normalized, ruleWords.ai),
+        privacy: matchWords(normalized, ruleWords.privacy),
+        high: matchWords(normalized, ruleWords.high),
+        parent: matchWords(normalized, ruleWords.parent),
+        intent: matchWords(normalized, ruleWords.intent),
+        medium: matchWords(normalized, ruleWords.medium),
+        low: matchWords(normalized, ruleWords.low)
+      };
+
+      if (hits.severeSkip.length) {
+        return {
+          status: "skip",
+          priority: "低",
+          badge: "スルー",
+          reason: `${hits.severeSkip.slice(0, 2).join("、")} が含まれ、安心感に合いません。`,
+          action: "いいね、コメント、フォローはしない。",
+          share: "不要",
+          score: -100
+        };
+      }
+
+      if (hits.confirm.length || hits.privacy.length || hits.ai.length) {
+        const reasonHit = hits.confirm[0] || hits.privacy[0] || hits.ai[0];
+        return {
+          status: "confirm",
+          priority: hits.confirm.some((word) => ["料金", "申し込み", "14日体験", "音声日記", "クレーム"].includes(word)) ? "高" : "中",
+          badge: "要確認",
+          reason: `${reasonHit} に関係します。自己判断せず夫に確認する対象です。`,
+          action: "反応せず、URLかスクリーンショットを夫に共有。",
+          share: "必ず共有",
+          score: 70
+        };
+      }
+
+      if (hits.skip.length) {
+        return {
+          status: "skip",
+          priority: "低",
+          badge: "スルー",
+          reason: `${hits.skip.slice(0, 2).join("、")} が含まれ、優先度が低いです。`,
+          action: "今回は何もしない。",
+          share: "不要",
+          score: -20
+        };
+      }
+
+      const score = hits.high.length * 4 + hits.parent.length * 3 + hits.intent.length * 2 + hits.medium.length - hits.low.length * 2;
+      if ((hits.high.length && hits.parent.length) || score >= 7) {
+        return {
+          status: "ok",
+          priority: "高",
+          badge: "いいねOK",
+          reason: "子ども英語や家庭学習に関心がある保護者に近い候補です。",
+          action: "いいねだけでOK。前向きな投稿なら短いコメントも可。",
+          share: hits.intent.length ? "共有した方がいい" : "不要",
+          score
+        };
+      }
+
+      if (score >= 3) {
+        return {
+          status: "ok",
+          priority: "中",
+          badge: "いいねOK",
+          reason: "教育、子育て、学習習慣との相性があります。",
+          action: "いいねだけ。フォローはまだ不要。",
+          share: "不要",
+          score
+        };
+      }
+
+      if (score >= 1) {
+        return {
+          status: "ok",
+          priority: "低",
+          badge: "いいねOK",
+          reason: "少し関係はありますが、今日の優先度は高くありません。",
+          action: "時間が余った時だけいいね。",
+          share: "不要",
+          score
+        };
+      }
+
+      return {
+        status: "skip",
+        priority: "低",
+        badge: "スルー",
+        reason: "子ども英語、親子英語、家庭学習との接点が弱いです。",
+        action: "今回は何もしない。",
+        share: "不要",
+        score
+      };
+    }
+
+    function matchWords(text, words) {
+      return words.filter((word) => text.includes(normalize(word)));
+    }
+
+    function normalize(text) {
+      return String(text || "").toLowerCase().replace(/\s+/g, " ").trim();
+    }
+
+    function sortCandidate(a, b) {
+      const rank = { ok: 3, confirm: 2, skip: 1 };
+      const priority = { "高": 3, "中": 2, "低": 1 };
+      return (rank[b.decision.status] - rank[a.decision.status]) ||
+        (priority[b.decision.priority] - priority[a.decision.priority]) ||
+        ((b.decision.score || 0) - (a.decision.score || 0));
+    }
+
+    function renderCandidates() {
+      const filtered = candidates.filter((item) => {
+        if (currentFilter === "all") return true;
+        if (currentFilter === "targets") return item.decision.status === "ok";
+        if (currentFilter === "confirm") return item.decision.status === "confirm";
+        if (currentFilter === "skip") return item.decision.status === "skip";
+        return true;
+      });
+
+      const ok = candidates.filter((item) => item.decision.status === "ok").length;
+      const confirm = candidates.filter((item) => item.decision.status === "confirm").length;
+      const skip = candidates.filter((item) => item.decision.status === "skip").length;
+      els.candidateCounts.textContent = `全${candidates.length}件 / いいね候補${ok}件 / 要確認${confirm}件 / スルー${skip}件`;
+      els.candidateList.innerHTML = "";
+
+      if (!filtered.length) {
+        els.candidateList.innerHTML = `<div class="empty">この条件の候補はありません。</div>`;
+        return;
+      }
+
+      filtered.forEach((item) => {
+        const card = document.createElement("article");
+        const done = Boolean(state.done[item.id]);
+        card.className = `candidate ${done ? "done" : ""}`;
+        card.innerHTML = candidateHtml(item, done);
+        els.candidateList.appendChild(card);
+      });
+    }
+
+    function candidateHtml(item, done) {
+      const decision = item.decision;
+      const badgeClass = decision.status === "ok" ? (decision.priority === "高" ? "ok" : decision.priority === "中" ? "mid" : "low") :
+        decision.status === "confirm" ? "warn" : "stop";
+      const urlHtml = item.url ? `<a class="candidate-url" href="${escapeAttr(item.url)}" target="_blank" rel="noreferrer">${escapeHtml(shortUrl(item.url))}</a>` : "";
+      const openButton = item.url ? `<a class="link-button" href="${escapeAttr(item.url)}" target="_blank" rel="noreferrer">開く</a>` : "";
+      return `
+        <div class="candidate-head">
+          <div>
+            <h3 class="candidate-title">${escapeHtml(item.title || "候補")}</h3>
+            ${urlHtml}
+          </div>
+          <div class="badges">
+            <span class="badge ${badgeClass}">${escapeHtml(decision.badge)}</span>
+            <span class="badge ${badgeClass}">優先度 ${escapeHtml(decision.priority)}</span>
+          </div>
+        </div>
+        <p class="candidate-text">${escapeHtml(item.text || "本文なし")}</p>
+        <div class="decision">
+          <div><strong>理由</strong>${escapeHtml(decision.reason)}</div>
+          <div><strong>次にやること</strong>${escapeHtml(decision.action)}</div>
+          <div><strong>夫への共有</strong>${escapeHtml(decision.share)}</div>
+        </div>
+        <div class="actions">
+          ${openButton}
+          <button type="button" class="primary" ${done || decision.status !== "ok" || state.liked >= 50 ? "disabled" : ""} onclick="markCandidate('${item.id}','liked')">いいね済み</button>
+          <button type="button" ${done || decision.status !== "confirm" ? "disabled" : ""} onclick="markCandidate('${item.id}','confirm')">共有済み</button>
+          <button type="button" ${done ? "disabled" : ""} onclick="markCandidate('${item.id}','skip')">処理済み</button>
+        </div>
+      `;
+    }
+
+    window.markCandidate = function markCandidate(id, action) {
+      if (state.done[id]) return;
+      state.done[id] = action;
+      if (action === "liked") state.liked += 1;
+      if (action === "confirm") state.confirm += 1;
+      if (action === "skip") state.skipped += 1;
+      saveState();
+      renderDaily();
+      renderCandidates();
+    };
+
+    function clearCandidates() {
+      candidates = [];
+      saveCandidates();
+      renderCandidates();
+    }
+
+    function resetDay() {
+      state.liked = 0;
+      state.skipped = 0;
+      state.confirm = 0;
+      state.done = {};
+      saveState();
+      renderDaily();
+      renderCandidates();
+    }
+
+    async function copyDailyReport() {
+      const ok = candidates.filter((item) => item.decision.status === "ok").length;
+      const high = candidates.filter((item) => item.decision.status === "ok" && item.decision.priority === "高").length;
+      const report = [
+        "【SNSいいね活動 日次報告】",
+        `日付: ${state.date}`,
+        `いいね済み: ${state.liked}件`,
+        `要確認共有: ${state.confirm}件`,
+        `処理済みスルー: ${state.skipped}件`,
+        `抽出候補: ${candidates.length}件`,
+        `いいね候補: ${ok}件`,
+        `高優先度: ${high}件`,
+        "",
+        "気になったこと:",
+        ""
+      ].join("\n");
+      await navigator.clipboard.writeText(report);
+      flashButton("copyReportBtn", "コピー済み");
+    }
+
+    function loadSampleCandidates() {
+      const sample = [
+        {
+          url: "https://example.com/parent-english-reading",
+          title: "小学生の英語音読",
+          text: "小学生の息子が英語音読を毎日少しずつ頑張っている。発音が合っているか不安だけど、家庭学習として続けたい。"
+        },
+        {
+          url: "https://example.com/fx-sidejob",
+          title: "誰でも稼げる副業",
+          text: "AIとFXで誰でも稼げる。詳しくはDMください。LINE登録で無料セミナー。"
+        },
+        {
+          url: "https://example.com/english-school",
+          title: "地域の英語教室",
+          text: "名古屋の英語教室です。無料体験レッスン受付中。小学生向け英会話スクール。"
+        },
+        {
+          url: "https://example.com/home-study",
+          title: "家庭学習の習慣",
+          text: "娘の家庭学習がなかなか続かない。習い事と宿題のバランスが難しい。"
+        }
+      ].map((item) => makeCandidate(item, "sample"));
+      mergeCandidates(sample);
+    }
+
+    function showInlineError(message) {
+      els.searchResults.innerHTML = `<div class="notice danger">${escapeHtml(message)}</div>`;
+    }
+
+    function flashButton(id, text) {
+      const button = document.getElementById(id);
+      const old = button.textContent;
+      button.textContent = text;
+      setTimeout(() => { button.textContent = old; }, 1400);
+    }
+
+    function guessTitle(url) {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname.replace(/^www\./, "");
+      } catch {
+        return "";
+      }
+    }
+
+    function shortUrl(url) {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname.replace(/^www\./, "") + parsed.pathname.slice(0, 80);
+      } catch {
+        return url.slice(0, 100);
+      }
+    }
+
+    function hashString(input) {
+      let hash = 0;
+      for (let i = 0; i < input.length; i += 1) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash |= 0;
+      }
+      return `c${Math.abs(hash)}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#96;");
+    }
+  </script>
+</body>
+</html>
