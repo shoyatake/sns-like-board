@@ -348,6 +348,64 @@
       text-align: center;
     }
 
+    .motivation-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(18, 28, 31, .58);
+      backdrop-filter: blur(8px);
+    }
+
+    .motivation-modal.show {
+      display: grid;
+    }
+
+    .motivation-card {
+      width: min(420px, 100%);
+      max-height: min(760px, calc(100vh - 44px));
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .28);
+      display: grid;
+    }
+
+    .motivation-card img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: cover;
+      display: block;
+      background: #eef2f2;
+    }
+
+    .motivation-body {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .motivation-body strong {
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .motivation-body p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .motivation-close {
+      width: 100%;
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #fff;
+    }
+
     footer {
       padding: 0 0 28px;
       color: var(--muted);
@@ -383,6 +441,16 @@
   </style>
 </head>
 <body>
+  <div class="motivation-modal" id="motivationModal" role="dialog" aria-modal="true" aria-labelledby="motivationTitle">
+    <div class="motivation-card">
+      <img id="motivationImage" src="" alt="モチベーション写真">
+      <div class="motivation-body">
+        <strong id="motivationTitle">今日も少しだけ積み上げよう</strong>
+        <p id="motivationText">まずは10件。無理なく続けることを優先します。</p>
+        <button type="button" class="motivation-close" id="motivationClose">成果を見る</button>
+      </div>
+    </div>
+  </div>
   <header>
     <div class="shell top">
       <div>
@@ -705,6 +773,38 @@
         "'": "&#39;"
       }[char]));
     }
+  </script>
+  <script>
+    (function () {
+      const photos = [
+        { src: "assets/motivation-1.jpg", title: "今日の積み上げを見よう", text: "小さな数字でも、続けるほど信頼の接点になります。" },
+        { src: "assets/motivation-2.jpg", title: "続けた分だけ見える化", text: "7日合計と連続実施日数を見て、次の一歩を決めましょう。" },
+        { src: "assets/motivation-3.jpg", title: "休憩も成果の一部", text: "上限を守って、明日も続けられるペースで進めます。" }
+      ];
+      const modal = document.getElementById("motivationModal");
+      const image = document.getElementById("motivationImage");
+      const title = document.getElementById("motivationTitle");
+      const text = document.getElementById("motivationText");
+      const close = document.getElementById("motivationClose");
+      if (!modal || !image || !title || !text || !close) return;
+      const selected = photos[Math.floor(Math.random() * photos.length)];
+      image.src = selected.src;
+      title.textContent = selected.title;
+      text.textContent = selected.text;
+      function hide() {
+        modal.classList.remove("show");
+      }
+      close.addEventListener("click", hide);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) hide();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") hide();
+      });
+      window.addEventListener("load", () => {
+        setTimeout(() => modal.classList.add("show"), 350);
+      });
+    }());
   </script>
 </body>
 </html>
